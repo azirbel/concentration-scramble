@@ -10,10 +10,15 @@ export default Ember.Component.extend({
 
   // Main game state
   // --------------------------------------------------------------------------
-  level: 1,
+  wordIndex: 0,
   timeRemaining: 60,
   score: 0,
+  level: Ember.computed('wordIndex', function() {
+    return this.get('wordIndex') + 1;
+  }),
 
+  // Misc
+  // --------------------------------------------------------------------------
   startTimer: function() {
     setInterval(function() {
       this.tick()
@@ -24,4 +29,6 @@ export default Ember.Component.extend({
     this.decrementProperty('timeRemaining');
     console.log(this.get('timeRemaining'));
   }
+
+
 });
