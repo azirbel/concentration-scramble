@@ -1,0 +1,15 @@
+$game-width: 700px;
+$game-height: 400px;
+
+.scramble-game {
+  // Arrange the game in the center of the screen/parent div
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  height: $game-height;
+  width: $game-width;
+  margin-top: -$game-height / 2;
+  margin-left: -$game-width / 2;
+
+  background-color: #cce;
+}
