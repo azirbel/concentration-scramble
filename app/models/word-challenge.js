@@ -15,7 +15,8 @@ export default Ember.Object.extend({
   init: function() {
     var word = this.get('word');
     this.set('originalWord', word);
-    this.set('scrambledWord', word);
+    // TODO: Make sure scrambled word is not the same as the original
+    this.set('scrambledWord', _.shuffle(word).join(''));
     // TODO: Apply numHiddenCharacters
   },
 

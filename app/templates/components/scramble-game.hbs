@@ -1,5 +1,15 @@
 <div class="scramble-game">
+  {{#if isStartState}}
+    <div class="overlay">
+      Press [Enter] to start!
+    </div>
+  {{/if}}
   <div class="game-area">
+    {{#if isEndState}}
+      <div class="overlay">
+        Press [Enter] to play again!
+      </div>
+    {{/if}}
     {{word-display
       letters=currentChallenge.letters
     }}
@@ -19,6 +29,10 @@
     {{stat-display
       label='Score'
       value=score
+    }}
+    {{stat-display
+      label='Last Word'
+      value=lastWord
     }}
   </div>
 </div>

@@ -5,7 +5,7 @@ export default Ember.Component.extend({
   didInsertElement: function() {
     this._super();
     $('html').keydown(this.keyPress.bind(this));
-    this.startTimer();
+    this.startClock();
   },
 
   willDestroyElement: function() {
@@ -16,13 +16,18 @@ export default Ember.Component.extend({
 
   keyPress: function(e) {
     var code = e.keyCode;
-    if (!code) {
+    if (!code || e.altKey || e.ctrlKey || e.metaKey) {
       return;
+    }
+    // Return
+    if (code === 13) {
+      if (this.get('isStartState') || this.get('isEndState')) {
+        this.restartGame();
+      }
     }
     // Backspace
     if (code === 46 || code === 8) {
       e.preventDefault();
-      console.log('del');
       this.unguessChar();
     }
     // Letters, upper or lowercase
@@ -30,6 +35,15 @@ export default Ember.Component.extend({
       e.preventDefault();
       this.guessChar(String.fromCharCode(code).toLowerCase());
     }
+  },
+
+  restartGame: function() {
+    this.set('isStartState', false);
+    this.set('isEndState', false);
+    this.set('timeRemaining', 60);
+    this.set('score', 0);
+    this.set('index', 0);
+    this.startClock();
   },
 
   // API - Passed in
@@ -40,6 +54,9 @@ export default Ember.Component.extend({
 
   // Main game state
   // --------------------------------------------------------------------------
+  isStartState: true,
+  isEndState: false,
+  // TODO: Rename
   index: 0,
   timeRemaining: 60,
   score: 0,
@@ -47,18 +64,37 @@ export default Ember.Component.extend({
     return this.get('index') + 1;
   }),
 
+  _clockCallback: null,
+
   // Misc
   // --------------------------------------------------------------------------
-  startTimer: function() {
+  startClock: function() {
+    this.stopClock();
     // TODO: Apparently you can't rely on this for actual time. Revisit
-    setInterval(function() {
+    this.set('_clockCallback', setInterval(function() {
       this.tick()
-    }.bind(this), 1000);
+    }.bind(this), 1000));
+  },
+
+  stopClock: function() {
+    clearInterval(this.get('_clockCallback'));
   },
 
   tick: function() {
     this.decrementProperty('timeRemaining');
+    if (this.get('timeRemaining') <= 0) {
+      this.send('gameOver');
+    }
   },
+
+  lastWord: function() {
+    if (this.get('index') === 0) {
+      return '-';
+    } else {
+      var lastChallenge = this.get('wordChallenges')[this.get('index') - 1];
+      return lastChallenge.get('originalWord');
+    }
+  }.property('index', 'wordChallenges.@each.originalWord'),
 
   currentChallenge: Ember.computed('wordChallenges', 'index', function() {
     if (this.get('index') >= this.get('wordChallenges.length')) {
@@ -72,7 +108,6 @@ export default Ember.Component.extend({
   }.property(),
 
   guessChar: function(character) {
-    console.log(character);
     var challengeLetters = this.get('currentChallenge').get('letters');
     var guessedLetter = null;
     for (var i = 0; i < challengeLetters.length; i++) {
@@ -94,8 +129,7 @@ export default Ember.Component.extend({
     // Check for win
     var guessedWord = this.get('guessedLetters').mapBy('character').join('');
     if (guessedWord === this.get('currentChallenge.originalWord')) {
-      this.incrementProperty('index');
-      this.set('guessedLetters', []);
+      this.send('correctGuess');
     }
   },
 
@@ -107,5 +141,29 @@ export default Ember.Component.extend({
     var lastLetter = guessedLetters.get('lastObject');
     lastLetter.set('guessed', false);
     guessedLetters.removeObject(lastLetter);
+  },
+
+  actions: {
+    correctGuess: function() {
+      // Scoring
+      var challenge = this.get('currentChallenge');
+      var numPoints = challenge.get('originalWord.length') +
+          challenge.get('numHiddenCharacters');
+
+      this.incrementProperty('score', numPoints);
+      this.incrementProperty('timeRemaining', numPoints * 2);
+
+      this.incrementProperty('index');
+      this.set('guessedLetters', []);
+
+      if (this.get('index') >= this.get('wordChallenges.length')) {
+        this.send('gameOver', true);
+      }
+    },
+
+    gameOver: function(win=false) {
+      this.set('isEndState', true);
+      this.stopClock();
+    }
   }
 });
