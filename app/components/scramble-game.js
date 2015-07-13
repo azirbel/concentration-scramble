@@ -36,6 +36,7 @@ export default Ember.Component.extend({
     // Tab
     if (code === 9) {
       e.preventDefault();
+      this.decrementProperty('score', 2);
       this.send('previewHidden');
     }
     // Letters, upper or lowercase
