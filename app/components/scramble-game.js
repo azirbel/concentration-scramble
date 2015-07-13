@@ -49,7 +49,7 @@ export default Ember.Component.extend({
   restartGame: function() {
     this.set('isStartState', false);
     this.set('isEndState', false);
-    this.set('timeRemaining', 6);
+    this.set('timeRemaining', 60);
     this.set('score', 0);
     this.set('index', 0);
     this.startClock();
@@ -68,7 +68,7 @@ export default Ember.Component.extend({
   isEndState: false,
   // TODO: Rename
   index: 0,
-  timeRemaining: 6,
+  timeRemaining: 60,
   score: 0,
   level: Ember.computed('index', function() {
     if (this.get('isEndState')) {
