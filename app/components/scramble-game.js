@@ -48,7 +48,7 @@ export default Ember.Component.extend({
   restartGame: function() {
     this.set('isStartState', false);
     this.set('isEndState', false);
-    this.set('timeRemaining', 60);
+    this.set('timeRemaining', 6);
     this.set('score', 0);
     this.set('index', 0);
     this.startClock();
@@ -67,9 +67,12 @@ export default Ember.Component.extend({
   isEndState: false,
   // TODO: Rename
   index: 0,
-  timeRemaining: 60,
+  timeRemaining: 6,
   score: 0,
   level: Ember.computed('index', function() {
+    if (this.get('isEndState')) {
+      return this.get('index');
+    }
     return this.get('index') + 1;
   }),
 
@@ -94,6 +97,7 @@ export default Ember.Component.extend({
   tick: function() {
     this.decrementProperty('timeRemaining');
     if (this.get('timeRemaining') <= 0) {
+      this.incrementProperty('index');
       this.send('gameOver');
     }
   },
@@ -183,6 +187,7 @@ export default Ember.Component.extend({
     gameOver: function(win=false) {
       this.set('isEndState', true);
       this.stopClock();
+      this.incrementProperty('score', _.floor(this.get('timeRemaining') / 2));
     },
 
     previewHidden: function() {
