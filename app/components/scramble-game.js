@@ -21,7 +21,11 @@ export default Ember.Component.extend({
     }
     // Return
     if (code === 13) {
-      if (this.get('isStartState') || this.get('isEndState')) {
+      if (this.get('isStartState')) {
+        this.restartGame();
+      }
+      if (this.get('isEndState')) {
+        this.sendAction('newGame');
         this.restartGame();
       }
     }

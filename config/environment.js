@@ -22,7 +22,7 @@ module.exports = function(environment) {
       'default-src': "'self'",
       'script-src': "'self'",
       'font-src': "'self'",
-      'connect-src': "'self'",
+      'connect-src': "'self' api.wordnik.com",
       'img-src': "'self'",
       'style-src': "'self' 'unsafe-inline'",
       'media-src': "'self'",
