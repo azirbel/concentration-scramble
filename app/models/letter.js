@@ -1,7 +1,9 @@
 import Ember from 'ember';
 
-export default Ember.Component.extend({
+export default Ember.Object.extend({
   // API - Passed in
   // --------------------------------------------------------------------------
-  letters: null,
+  character: '~',
+  hidden: false,
+  guessed: false
 });

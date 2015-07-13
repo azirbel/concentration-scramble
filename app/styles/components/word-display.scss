@@ -1,0 +1,19 @@
+$letter-box-size: 40px;
+
+.word-display {
+  width: 100%;
+  background-color: #ece;
+}
+
+.letter {
+  display: inline-block;
+  float: left;
+  width: $letter-box-size;
+  height: $letter-box-size;
+  margin: 10px;
+
+  border: 1px solid black;
+
+  text-align: center;
+  line-height: $letter-box-size;
+}
