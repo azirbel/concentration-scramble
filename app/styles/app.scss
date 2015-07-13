@@ -10,3 +10,10 @@ html, body {
 @import 'components/scramble-game';
 @import 'components/stat-display';
 @import 'components/word-display';
+
+.footer {
+  position: absolute;
+  bottom: 0px;
+  width: 100%;
+  text-align: center;
+}
