@@ -1,3 +1,5 @@
+@import '../variables';
+
 $letter-box-size: 60px;
 
 .word-display {
@@ -32,6 +34,18 @@ $letter-box-size: 60px;
   }
 
   &.hidden {
-    border: 1px dashed black;
+    border: 2px dotted black;
+    line-height: $letter-box-size - 4px;
+
+    .character {
+      transition: opacity 1s;
+      opacity: 0;
+    }
+  }
+}
+
+.show-hidden .letter.hidden {
+  .character {
+    opacity: 1;
   }
 }

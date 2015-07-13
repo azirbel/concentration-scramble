@@ -7,7 +7,8 @@ export default Ember.Route.extend({
     return Wordnik.getWords(4, 4).then(function(result) {
       return result.map(function(word) {
         return WordChallenge.create({
-          word: word
+          word: word,
+          numHiddenCharacters: 1
         });
       });
     });

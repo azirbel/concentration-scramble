@@ -6,7 +6,7 @@
     {{#if isStartState}}
       <div class="overlay">
         <p>
-          18 levels of straining your memory in two ways at once!
+          18 levels of straining your memory in two ways at once! Letters start fading at level 4.
         </p>
         <p>
           Ready to start? Of course you are!
@@ -16,7 +16,7 @@
         </p>
       </div>
     {{/if}}
-    <div class="game-area">
+    <div class="game-area {{if showHidden 'show-hidden'}}">
       {{#if isEndState}}
         <div class="overlay">
           <h1>Game Over!</h1>

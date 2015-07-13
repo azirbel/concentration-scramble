@@ -33,6 +33,11 @@ export default Ember.Component.extend({
       e.preventDefault();
       this.unguessChar();
     }
+    // Tab
+    if (code === 9) {
+      e.preventDefault();
+      this.send('previewHidden');
+    }
     // Letters, upper or lowercase
     if ((code >= 65 && code <= 90) || (code >= 97 && code <= 122)) {
       e.preventDefault();
@@ -47,6 +52,7 @@ export default Ember.Component.extend({
     this.set('score', 0);
     this.set('index', 0);
     this.startClock();
+    this.send('previewHidden');
   },
 
   // API - Passed in
@@ -68,6 +74,8 @@ export default Ember.Component.extend({
   }),
 
   _clockCallback: null,
+
+  showHidden: true,
 
   // Misc
   // --------------------------------------------------------------------------
@@ -156,17 +164,32 @@ export default Ember.Component.extend({
       this.incrementProperty('score', numPoints);
       this.incrementProperty('timeRemaining', numPoints * 2);
 
-      this.incrementProperty('index');
-      this.set('guessedLetters', []);
+      // Call setProperties to set everything atomically, so we don't
+      // get a transition on the rerender
+      var currentIndex = this.get('index');
+      this.setProperties({
+        index: currentIndex + 1,
+        guessedLetters: [],
+        showHidden: true
+      });
 
       if (this.get('index') >= this.get('wordChallenges.length')) {
         this.send('gameOver', true);
       }
+      
+      this.send('previewHidden');
     },
 
     gameOver: function(win=false) {
       this.set('isEndState', true);
       this.stopClock();
+    },
+
+    previewHidden: function() {
+      this.set('showHidden', true);
+      Ember.run.later(function() {
+        this.set('showHidden', false)
+      }.bind(this), 2000);
     }
   }
 });

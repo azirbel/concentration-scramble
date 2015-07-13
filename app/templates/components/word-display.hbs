@@ -1,7 +1,9 @@
 <div class="word-display">
   {{#each letters as |lt|}}
     <div class="letter {{if lt.hidden 'hidden'}} {{if lt.guessed 'guessed'}}">
-      {{lt.character}}
+      <div class="character">
+        {{lt.character}}
+      </div>
     </div>
   {{/each}}
 </div>
