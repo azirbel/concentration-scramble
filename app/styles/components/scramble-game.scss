@@ -1,32 +1,46 @@
 $game-width: 700px;
 $game-height: 400px;
+$game-area-width: 480px;
 
 .scramble-game {
   // Arrange the game in the center of the screen/parent div
   position: absolute;
-  top: 50%;
+  top: 40%;
   left: 50%;
   height: $game-height;
   width: $game-width;
   margin-top: -$game-height / 2;
   margin-left: -$game-width / 2;
 
+  .title {
+    color: $primary-color-light;
+    font-size: 46px;
+    text-align: center;
+    text-transform: uppercase;
+    margin-bottom: -11px;
+  }
+}
+
+.game-container {
+  position: relative;
+  overflow: hidden;
+  background-color: $primary-color-light;
+  border-radius: 16px;
+
   .game-area {
     position: relative;
     float: left;
     height: 100%;
-    width: 70%;
-
-    background-color: #cce;
+    width: $game-area-width;
   }
 
   .state-area {
     position: relative;
     float: left;
     height: 100%;
-    width: 30%;
+    width: $game-width - $game-area-width;
 
-    background-color: #ecc;
+    font-size: 28px;
   }
 }
 
@@ -34,6 +48,7 @@ $game-height: 400px;
   height: 100%;
   width: 100%;
   z-index: 10;
-  background-color: blue;
   position: absolute;
+  background-color: $primary-color-light;
+  border-radius: 16px;
 }

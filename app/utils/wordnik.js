@@ -16,7 +16,7 @@ import icAjax from 'ic-ajax';
 
 function getWords(numWords, wordLength) {
   return new Promise(function(resolve, reject) {
-    resolve(['mead', 'weed', 'head']);
+    resolve(['zirbel', 'weed', 'head']);
   });
 }
 

@@ -5,7 +5,6 @@ export default Ember.Component.extend({
   didInsertElement: function() {
     this._super();
     $('html').keydown(this.keyPress.bind(this));
-    this.startClock();
   },
 
   willDestroyElement: function() {

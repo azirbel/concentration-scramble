@@ -1,24 +1,37 @@
-$letter-box-size: 40px;
+$letter-box-size: 60px;
 
 .word-display {
-  width: 100%;
   overflow: hidden;
-  background-color: #ece;
+  margin: 24px 16px 48px 16px;
+  height: $letter-box-size;
+
+  * + * {
+    margin-left: 16px;
+  }
 }
 
 .letter {
-  display: inline-block;
+  display: inline;
   float: left;
   width: $letter-box-size;
   height: $letter-box-size;
-  margin: 10px;
-
-  border: 1px solid black;
 
   text-align: center;
   line-height: $letter-box-size;
 
+  text-transform: uppercase;
+  font-weight: 700;
+  font-size: 42px;
+
+  background-color: $primary-color;
+
+  border-radius: 10px;
+
   &.guessed {
-    border-color: green;
+    background-color: $primary-color-dark;
+  }
+
+  &.hidden {
+    border: 1px dashed black;
   }
 }

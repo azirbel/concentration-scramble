@@ -1,38 +1,62 @@
 <div class="scramble-game">
-  {{#if isStartState}}
-    <div class="overlay">
-      Press [Enter] to start!
-    </div>
-  {{/if}}
-  <div class="game-area">
-    {{#if isEndState}}
+  <div class="title">
+    Concentration-Scramble
+  </div>
+  <div class="game-container">
+    {{#if isStartState}}
       <div class="overlay">
-        Press [Enter] to play again!
+        <p>
+          18 levels of straining your memory in two ways at once!
+        </p>
+        <p>
+          Ready to start? Of course you are!
+        </p>
+        <p>
+          Press <strong>ENTER</strong>!
+        </p>
       </div>
     {{/if}}
-    {{word-display
-      letters=currentChallenge.letters
-    }}
-    {{word-display
-      letters=guessedLetters
-    }}
-  </div>
-  <div class="state-area">
-    {{stat-display
-      label='Level'
-      value=level
-    }}
-    {{stat-display
-      label='Time'
-      value=timeRemaining
-    }}
-    {{stat-display
-      label='Score'
-      value=score
-    }}
-    {{stat-display
-      label='Last Word'
-      value=lastWord
-    }}
+    <div class="game-area">
+      {{#if isEndState}}
+        <div class="overlay">
+          <h1>Game Over!</h1>
+          <p>Score:</p>
+          <div class="score">{{score}}</div>
+          <p>
+            Press <strong>ENTER</strong> to play again!
+          </p>
+        </div>
+      {{/if}}
+      {{word-display
+        letters=currentChallenge.letters
+      }}
+      {{word-display
+        letters=guessedLetters
+      }}
+      <p>
+        Type to play.
+      </p>
+      <p>
+        Press <strong>TAB</strong> for a hint on any hidden letters.
+      </p>
+    </div>
+    <div class="state-area">
+      {{stat-display
+        label='Level'
+        value=level
+      }}
+      {{stat-display
+        label='Time'
+        value=timeRemaining
+      }}
+      {{stat-display
+        label='Score'
+        value=score
+      }}
+      {{stat-display
+        label='Last Word'
+        value=lastWord
+      }}
+    </div>
   </div>
 </div>

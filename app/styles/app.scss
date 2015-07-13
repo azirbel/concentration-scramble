@@ -1,10 +1,42 @@
+@import 'variables';
+@import 'typography';
+
 html, body {
   margin: 0;
   padding: 0;
+  font-family: 'Bitter', 'Verdana';
+  font-size: 24px;
+  color: black;
 }
 
-* {
-  font-family: 'Source Sans Pro', 'Verdana';
+body {
+  background-color: $primary-color-dark;
+}
+
+a {
+  color: black;
+  text-decoration: none;
+  font-weight: 700;
+}
+
+p {
+  text-align: center;
+  margin: 8px 16px;
+}
+
+h1 {
+  text-align: center;
+  text-transform: uppercase;
+  margin-top: 16px;
+  color: $primary-color-dark;
+}
+
+.score {
+  font-size: 100px;
+  text-align: center;
+  margin: 0;
+  font-weight: 700;
+  margin-bottom: 24px;
 }
 
 @import 'components/scramble-game';
@@ -16,4 +48,5 @@ html, body {
   bottom: 0px;
   width: 100%;
   text-align: center;
+  line-height: 42px;
 }
