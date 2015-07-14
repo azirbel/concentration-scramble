@@ -1,7 +1,11 @@
-# Concentration-scramble
+# Concentration-Scramble
 
-This README outlines the details of collaborating on this Ember application.
-A short introduction of this app could easily go here.
+A word-scramble game with a memorization twist. Some letters disappear while
+you're trying to unscramble the word!
+
+Play at [azirbel.github.io/concentration-scramble](http://azirbel.github.io/concentration-scramble).
+
+See the following instructions for building/running locally. (Ember CLI)
 
 ## Prerequisites
 
