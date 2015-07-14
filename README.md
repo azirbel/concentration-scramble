@@ -11,6 +11,8 @@ Play at [azirbel.github.io/concentration-scramble](http://azirbel.github.io/conc
 * Sometimes Wordnik gives weird, hard-to-guess words. Tune the options more.
 * Redo color scheme and general design
 * Add a little "+X" notification next to level/time/score when the values change
+* Allow any valid word to be a correct answer (right now it only accepts the
+  word it's "looking for" even if others are valid
 
 See the following instructions for building/running locally. (Ember CLI)
 

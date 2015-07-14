@@ -97,14 +97,19 @@ export default Ember.Component.extend({
   }.property('challenges.[]', 'levelIndex'),
 
   // The last word guessed, or '-' if no words have been guessed yet
+  // At the end of the game, the last word should be the last one the user saw
   lastWord: function() {
-    if (this.get('levelIndex') === 0) {
+    var levelIndex = this.get('levelIndex');
+    if (this.get('isEndState')) {
+      levelIndex = Math.min(levelIndex + 1, this.get('challenges.length'));
+    }
+    if (levelIndex === 0) {
       return '-';
     } else {
-      var lastChallenge = this.get('challenges')[this.get('levelIndex') - 1];
+      var lastChallenge = this.get('challenges')[levelIndex - 1];
       return lastChallenge.get('originalWord');
     }
-  }.property('levelIndex', 'challenges.@each.originalWord'),
+  }.property('levelIndex', 'challenges.@each.originalWord', 'isEndState'),
 
   // levelIndex is 0-indexed, but we want to start the user at level 1
   levelDisplayNumber: Ember.computed('levelIndex', function() {
@@ -175,14 +180,14 @@ export default Ember.Component.extend({
       var numPoints = challenge.get('originalWord.length') +
           challenge.get('numHiddenCharacters');
       this.incrementProperty('score', numPoints);
-      this.incrementProperty('levelIndex');
       this.set('guessedLetters', []);
       this.set('showHidden', true);
 
-      if (this.get('levelIndex') >= this.get('challenges.length')) {
+      if (this.get('levelIndex') >= this.get('challenges.length') - 1) {
         this.send('gameOver');
       } else {
         this.incrementProperty('timeRemaining', numPoints * 2);
+        this.incrementProperty('levelIndex');
       }
 
       // Used to give the user feedback about correct guesses. When
