@@ -1,8 +1,9 @@
 import icAjax from 'ic-ajax';
 import WordChallenge from '../models/word-challenge';
 
-// Creates an authenticated or unauthenticated request depending on whether
-// the token was passed in or not
+// Returns a promise which resolves with the (raw) result of calling the
+// Wordnik API. The return type will be an array of "WordnikObject", which have
+// "word" and "id" fields.
 function _getWords(wordLength, numWords) {
   return icAjax('http://api.wordnik.com:80/v4/words.json/randomWords', {
     data: {
@@ -20,8 +21,7 @@ function _getWords(wordLength, numWords) {
   });
 };
 
-// Convenience function to make a WordChallenge object
-// Only used to make the code look cleaner when making levels
+// Convenience function to build a "challenge/level".
 function _buildChallenge(wordnikObject, numHiddenCharacters) {
   return WordChallenge.create({
     word: wordnikObject.word,
@@ -29,7 +29,8 @@ function _buildChallenge(wordnikObject, numHiddenCharacters) {
   });
 };
 
-// Returns a promise.
+// Returns a promise, which resolves to an array of WordChallenge objects. The
+// array represents a level progression for the full scramble game.
 function generateChallenges() {
   var challenges = [];
   return Ember.RSVP.hash({
@@ -64,8 +65,8 @@ function generateChallenges() {
     challenges.pushObject(_buildChallenge(wordBank.sixLetters[5], 5));
     challenges.pushObject(_buildChallenge(wordBank.sixLetters[6], 6));
 
-    // TODO: Remove
-    console.log(challenges.mapBy('word'));
+    // It's already easy to cheat with the debugger. Let's make it easier
+    console.log(challenges.mapBy('originalWord'));
     return challenges;
   });
 };

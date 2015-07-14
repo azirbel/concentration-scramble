@@ -1,95 +1,77 @@
 import Ember from 'ember';
 import WordChallenge from '../models/word-challenge';
-import Wordnik from '../utils/wordnik';
+import Wordnik from '../helpers/wordnik';
 
 export default Ember.Component.extend({
+  // Main game state
+  // --------------------------------------------------------------------------
+  challenges: null,     // Array of WordChallenge objects
+  isStartState: true,
+  isEndState: false,
+  levelIndex: 0,
+  timeRemaining: 0,
+  score: 0,
+  showHidden: true,
+  guessedLetters: function() { return []; }.property(),
+
+  isGameActive: function() {
+    return !this.get('isStartState') && !this.get('isEndState');
+  }.property('isStartState', 'isEndState'),
+
+  // Keyboard handling
+  // --------------------------------------------------------------------------
   didInsertElement: function() {
     this._super();
     $('html').keydown(this.keyPress.bind(this));
   },
 
   willDestroyElement: function() {
-    // HACK: Should remove just the handler we added
+    // TODO: Should remove only the handler we added
     $('html').off('keydown');
     this._super();
   },
 
-  // TODO: Make "isGameActive" variable which AND's start/end state
-
   keyPress: function(e) {
     var code = e.keyCode;
-    if (!code || e.altKey || e.ctrlKey || e.metaKey) {
+    if (e.altKey || e.ctrlKey || e.metaKey || !code) {
       return;
     }
-    // Return
-    if (code === 13) {
-      if (this.get('isStartState') || this.get('isEndState')) {
-        // TODO: Pull out into function
-        var _this = this;
-        Wordnik.generateChallenges().then(function(challenges) {
-          _this.set('wordChallenges', challenges);
-          _this.restartGame();
-        });
-      }
+    // Return/enter
+    if (code === 13 && !this.get('isGameActive')) {
+      // TODO: Pull out into function
+      var _this = this;
+      Wordnik.generateChallenges().then(function(challenges) {
+        _this.set('challenges', challenges);
+        _this.send('startGame');
+      });
     }
     // Backspace
     if (code === 46 || code === 8) {
-      e.preventDefault();
-      this.unguessChar();
+      e.preventDefault();  // I hate accidental "back"s in all cases
+      if (this.get('isGameActive')) {
+        this.send('unguessChar');
+      }
     }
     // Tab
-    if (code === 9) {
+    if (code === 9 && this.get('isGameActive')) {
       e.preventDefault();
       this.decrementProperty('score', 2);
       this.send('previewHidden');
     }
     // Letters, upper or lowercase
-    if ((code >= 65 && code <= 90) || (code >= 97 && code <= 122)) {
+    if (this.get('isGameActive') &&
+        ((code >= 65 && code <= 90) || (code >= 97 && code <= 122))) {
       e.preventDefault();
-      this.guessChar(String.fromCharCode(code).toLowerCase());
+      this.send('guessChar', String.fromCharCode(code).toLowerCase());
     }
   },
 
-  restartGame: function() {
-    this.set('isStartState', false);
-    this.set('isEndState', false);
-    this.set('timeRemaining', 6);
-    this.set('score', 0);
-    this.set('index', 0);
-    this.startClock();
-    this.send('previewHidden');
-  },
-
-  // API - Passed in
+  // Clock
   // --------------------------------------------------------------------------
-
-  // Array of WordChallenges
-  wordChallenges: null,
-
-  // Main game state
-  // --------------------------------------------------------------------------
-  isStartState: true,
-  isEndState: false,
-  // TODO: Rename
-  index: 0,
-  timeRemaining: 6,
-  score: 0,
-  level: Ember.computed('index', function() {
-    if (this.get('isEndState')) {
-      return this.get('index');
-    }
-    return this.get('index') + 1;
-  }),
-
   _clockCallback: null,
 
-  showHidden: true,
-
-  // Misc
-  // --------------------------------------------------------------------------
   startClock: function() {
     this.stopClock();
-    // TODO: Apparently you can't rely on this for actual time. Revisit
     this.set('_clockCallback', setInterval(function() {
       this.tick()
     }.bind(this), 1000));
@@ -102,109 +84,132 @@ export default Ember.Component.extend({
   tick: function() {
     this.decrementProperty('timeRemaining');
     if (this.get('timeRemaining') <= 0) {
-      this.incrementProperty('index');
       this.send('gameOver');
     }
   },
 
-  lastWord: function() {
-    if (this.get('index') === 0) {
-      return '-';
-    } else {
-      var lastChallenge = this.get('wordChallenges')[this.get('index') - 1];
-      return lastChallenge.get('originalWord');
-    }
-  }.property('index', 'wordChallenges.@each.originalWord'),
-
-  currentChallenge: Ember.computed('wordChallenges', 'index', function() {
-    if (this.get('index') >= this.get('wordChallenges.length')) {
+  // Computed properties for transformations on game state
+  // --------------------------------------------------------------------------
+  currentChallenge: function() {
+    if (this.get('levelIndex') >= this.get('challenges.length')) {
       return null;
     }
-    return this.get('wordChallenges')[this.get('index')];
+    return this.get('challenges')[this.get('levelIndex')];
+  }.property('challenges.[]', 'levelIndex'),
+
+  // The last word guessed, or '-' if no words have been guessed yet
+  lastWord: function() {
+    if (this.get('levelIndex') === 0) {
+      return '-';
+    } else {
+      var lastChallenge = this.get('challenges')[this.get('levelIndex') - 1];
+      return lastChallenge.get('originalWord');
+    }
+  }.property('levelIndex', 'challenges.@each.originalWord'),
+
+  // levelIndex is 0-indexed, but we want to start the user at level 1
+  levelDisplayNumber: Ember.computed('levelIndex', function() {
+    return this.get('levelIndex') + 1;
   }),
 
-  guessedLetters: function() {
-    return [];
-  }.property(),
-
-  guessChar: function(character) {
-    var challengeLetters = this.get('currentChallenge').get('letters');
-    var guessedLetter = null;
-    for (var i = 0; i < challengeLetters.length; i++) {
-      var letter = challengeLetters[i];
-      if (letter.get('guessed')) {
-        continue;
-      }
-      if (character === letter.get('character')) {
-        letter.set('guessed', true);
-        guessedLetter = letter;
-        break;
-      }
-    }
-
-    if (guessedLetter) {
-      this.get('guessedLetters').pushObject(guessedLetter);
-    }
-
-    // Check for win
-    var guessedWord = this.get('guessedLetters').mapBy('character').join('');
-    if (guessedWord === this.get('currentChallenge.originalWord')) {
-      this.send('correctGuess');
-    }
-  },
-
-  unguessChar: function() {
-    var guessedLetters = this.get('guessedLetters');
-    if (guessedLetters.length < 1) {
-      return;
-    }
-    var lastLetter = guessedLetters.get('lastObject');
-    lastLetter.set('guessed', false);
-    guessedLetters.removeObject(lastLetter);
-  },
-
+  // Game Actions
+  //
+  // I've used the actions hash for "game actions/events". I think this is nice
+  // because it puts them all together, and theoretically components could
+  // trigger these using "sendAction". For example, the word-display component
+  // could call "sendAction('previewHidden')" to trigger that game event.
+  // --------------------------------------------------------------------------
   actions: {
-    correctGuess: function() {
-      // Scoring
+    startGame: function() {
+      this.set('isStartState', false);
+      this.set('isEndState', false);
+      this.set('timeRemaining', 60);    // TODO: Should be a global config
+      this.set('score', 0);
+      this.set('levelIndex', 0);
+      this.set('guessedLetters', []);
+      this.startClock();
+      this.send('previewHidden');
+    },
+
+    guessChar: function(character) {
+      var challengeLetters = this.get('currentChallenge').get('letters');
+      var guessedLetter = null;
+      for (var i = 0; i < challengeLetters.length; i++) {
+        var letter = challengeLetters[i];
+        if (letter.get('guessed')) {
+          continue;
+        }
+        if (character === letter.get('character')) {
+          letter.set('guessed', true);
+          guessedLetter = letter;
+          break;
+        }
+      }
+
+      if (guessedLetter) {
+        this.get('guessedLetters').pushObject(guessedLetter);
+      }
+
+      // Check for win
+      var guessedWord = this.get('guessedLetters').mapBy('character').join('');
+      if (guessedWord === this.get('currentChallenge.originalWord')) {
+        this.send('correctAnswer');
+      }
+    },
+
+    // Backspace over the most recently guessed character
+    unguessChar: function() {
+      var guessedLetters = this.get('guessedLetters');
+      if (guessedLetters.length < 1) {
+        return;
+      }
+      var lastLetter = guessedLetters.get('lastObject');
+      lastLetter.set('guessed', false);
+      guessedLetters.removeObject(lastLetter);
+    },
+
+    correctAnswer: function() {
       var challenge = this.get('currentChallenge');
+
+      // You get points depending on the difficulty (approximated as word
+      // length + number of hidden characters)
       var numPoints = challenge.get('originalWord.length') +
           challenge.get('numHiddenCharacters');
-
       this.incrementProperty('score', numPoints);
-      this.incrementProperty('timeRemaining', numPoints * 2);
+      this.incrementProperty('levelIndex');
+      this.set('guessedLetters', []);
+      this.set('showHidden', true);
 
-      // Call setProperties to set everything atomically, so we don't
-      // get a transition on the rerender
-      var currentIndex = this.get('index');
-      this.setProperties({
-        index: currentIndex + 1,
-        guessedLetters: [],
-        showHidden: true
-      });
+      if (this.get('levelIndex') >= this.get('challenges.length')) {
+        this.send('gameOver');
+      } else {
+        this.incrementProperty('timeRemaining', numPoints * 2);
+      }
 
+      // Used to give the user feedback about correct guesses. When
+      // "lastCorrectGuess" is set to a word, the word-display components can
+      // show it in green letters. Soon after, we stop displaying it
       this.set('lastCorrectGuess', challenge.word);
       Ember.run.later(function() {
         this.set('lastCorrectGuess', null);
       }.bind(this), 1000);
-
-      if (this.get('index') >= this.get('wordChallenges.length')) {
-        this.send('gameOver', true);
-      }
       
+      // Show the hidden characters for the next word
       this.send('previewHidden');
     },
 
-    gameOver: function(win=false) {
-      this.set('isEndState', true);
-      this.stopClock();
-      this.incrementProperty('score', _.floor(this.get('timeRemaining') / 2));
-    },
-
+    // Show the hidden characters briefly, then hide them again
     previewHidden: function() {
       this.set('showHidden', true);
       Ember.run.later(function() {
         this.set('showHidden', false)
       }.bind(this), 2000);
+    },
+
+    gameOver: function() {
+      this.set('isEndState', true);
+      this.stopClock();
+      this.incrementProperty('score', _.floor(this.get('timeRemaining') / 2));
     }
   }
 });

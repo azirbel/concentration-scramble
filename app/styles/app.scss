@@ -27,7 +27,12 @@ a {
 
 p {
   text-align: center;
-  margin: 8px 16px;
+  margin: 42px 32px;
+}
+
+p.tight {
+  text-align: center;
+  margin: 8px 32px;
 }
 
 h1 {
@@ -35,14 +40,6 @@ h1 {
   text-transform: uppercase;
   margin-top: 16px;
   color: $primary-color-dark;
-}
-
-.score {
-  font-size: 100px;
-  text-align: center;
-  margin: 0;
-  font-weight: 700;
-  margin-bottom: 24px;
 }
 
 @import 'components/scramble-game';
