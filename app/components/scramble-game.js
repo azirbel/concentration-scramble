@@ -178,6 +178,11 @@ export default Ember.Component.extend({
         showHidden: true
       });
 
+      this.set('lastCorrectGuess', challenge.word);
+      Ember.run.later(function() {
+        this.set('lastCorrectGuess', null);
+      }.bind(this), 1000);
+
       if (this.get('index') >= this.get('wordChallenges.length')) {
         this.send('gameOver', true);
       }

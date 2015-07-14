@@ -1,9 +1,20 @@
 <div class="word-display">
-  {{#each letters as |lt|}}
-    <div class="letter {{if lt.hidden 'hidden'}} {{if lt.guessed 'guessed'}}">
-      <div class="character">
-        {{lt.character}}
+  <div class="guessing-display-area">
+    {{#each letters as |lt|}}
+      <div class="letter {{if lt.hidden 'hidden'}} {{if lt.guessed 'guessed'}}">
+        <div class="character">
+          {{lt.character}}
+        </div>
       </div>
-    </div>
-  {{/each}}
+    {{/each}}
+  </div>
+  <div class="correct-guess-display-area {{if correctGuess 'show-guess'}}">
+    {{#each correctGuessCharacters as |ch|}}
+      <div class="letter correct">
+        <div class="character">
+          {{ch}}
+        </div>
+      </div>
+    {{/each}}
+  </div>
 </div>

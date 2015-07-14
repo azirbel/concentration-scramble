@@ -14,7 +14,7 @@ export default Ember.Object.extend({
   hiddenIndices: [],
 
   init: function() {
-    var word = this.get('word');
+    var word = this.get('word').toLowerCase();
     this.set('originalWord', word);
     this.set('scrambledWord', word);
     while(this.get('scrambledWord') === word) {
