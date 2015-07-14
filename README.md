@@ -5,6 +5,13 @@ you're trying to unscramble the word!
 
 Play at [azirbel.github.io/concentration-scramble](http://azirbel.github.io/concentration-scramble).
 
+## TODO
+
+* `TODO` comments throughout the code (minor)
+* Sometimes Wordnik gives weird, hard-to-guess words. Tune the options more.
+* Redo color scheme and general design
+* Add a little "+X" notification next to level/time/score when the values change
+
 See the following instructions for building/running locally. (Ember CLI)
 
 ## Prerequisites
