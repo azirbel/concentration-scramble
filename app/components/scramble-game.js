@@ -1,5 +1,6 @@
 import Ember from 'ember';
 import WordChallenge from '../models/word-challenge';
+import Wordnik from '../utils/wordnik';
 
 export default Ember.Component.extend({
   didInsertElement: function() {
@@ -13,6 +14,8 @@ export default Ember.Component.extend({
     this._super();
   },
 
+  // TODO: Make "isGameActive" variable which AND's start/end state
+
   keyPress: function(e) {
     var code = e.keyCode;
     if (!code || e.altKey || e.ctrlKey || e.metaKey) {
@@ -20,12 +23,13 @@ export default Ember.Component.extend({
     }
     // Return
     if (code === 13) {
-      if (this.get('isStartState')) {
-        this.restartGame();
-      }
-      if (this.get('isEndState')) {
-        this.sendAction('newGame');
-        this.restartGame();
+      if (this.get('isStartState') || this.get('isEndState')) {
+        // TODO: Pull out into function
+        var _this = this;
+        Wordnik.generateChallenges().then(function(challenges) {
+          _this.set('wordChallenges', challenges);
+          _this.restartGame();
+        });
       }
     }
     // Backspace
@@ -49,7 +53,7 @@ export default Ember.Component.extend({
   restartGame: function() {
     this.set('isStartState', false);
     this.set('isEndState', false);
-    this.set('timeRemaining', 60);
+    this.set('timeRemaining', 6);
     this.set('score', 0);
     this.set('index', 0);
     this.startClock();
@@ -68,7 +72,7 @@ export default Ember.Component.extend({
   isEndState: false,
   // TODO: Rename
   index: 0,
-  timeRemaining: 60,
+  timeRemaining: 6,
   score: 0,
   level: Ember.computed('index', function() {
     if (this.get('isEndState')) {
