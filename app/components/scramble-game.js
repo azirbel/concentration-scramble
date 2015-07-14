@@ -1,5 +1,4 @@
 import Ember from 'ember';
-import WordChallenge from '../models/word-challenge';
 import Wordnik from '../helpers/wordnik';
 
 export default Ember.Component.extend({
@@ -22,12 +21,12 @@ export default Ember.Component.extend({
   // --------------------------------------------------------------------------
   didInsertElement: function() {
     this._super();
-    $('html').keydown(this.keyPress.bind(this));
+    Ember.$('html').keydown(this.keyPress.bind(this));
   },
 
   willDestroyElement: function() {
     // TODO: Should remove only the handler we added
-    $('html').off('keydown');
+    Ember.$('html').off('keydown');
     this._super();
   },
 
@@ -73,7 +72,7 @@ export default Ember.Component.extend({
   startClock: function() {
     this.stopClock();
     this.set('_clockCallback', setInterval(function() {
-      this.tick()
+      this.tick();
     }.bind(this), 1000));
   },
 
@@ -202,7 +201,7 @@ export default Ember.Component.extend({
     previewHidden: function() {
       this.set('showHidden', true);
       Ember.run.later(function() {
-        this.set('showHidden', false)
+        this.set('showHidden', false);
       }.bind(this), 2000);
     },
 

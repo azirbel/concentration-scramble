@@ -1,3 +1,4 @@
+import Ember from 'ember';
 import icAjax from 'ic-ajax';
 import WordChallenge from '../models/word-challenge';
 
@@ -19,7 +20,7 @@ function _getWords(wordLength, numWords) {
       api_key: 'a2a73e7b926c924fad7001ca3111acd55af2ffabf50eb4ae5'
     }
   });
-};
+}
 
 // Convenience function to build a "challenge/level".
 function _buildChallenge(wordnikObject, numHiddenCharacters) {
@@ -27,7 +28,7 @@ function _buildChallenge(wordnikObject, numHiddenCharacters) {
     word: wordnikObject.word,
     numHiddenCharacters: numHiddenCharacters
   });
-};
+}
 
 // Returns a promise, which resolves to an array of WordChallenge objects. The
 // array represents a level progression for the full scramble game.
@@ -69,6 +70,6 @@ function generateChallenges() {
     console.log(challenges.mapBy('originalWord'));
     return challenges;
   });
-};
+}
 
 export default { generateChallenges };
